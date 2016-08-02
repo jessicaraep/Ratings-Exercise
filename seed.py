@@ -4,7 +4,7 @@ from sqlalchemy import func
 from model import User
 from model import Rating
 from model import Movie
-from datetime import datetime
+import datetime
 
 from model import connect_to_db, db
 from server import app
@@ -41,20 +41,20 @@ def load_movies():
     print "Movies"
 
     # Delete all rows in table, so if we need to run this a second time,
-    # we won't be trying to add duplicate users
+    # we won't be trying to add duplicate movies
     Movie.query.delete()
 
     # Read u.user file and insert data
     for row in open("seed_data/u.item"):
         row = row.rstrip()
         words = row.split("|")
-        movie_id, title, released_str, imdb_url = words[0:4]
+        movie_id, title_with_year, released_str, empty, imdb_url = words[0:5]
 
-    # title_no_year = title.split("(")[0]
-    if released_str:
-        released_at = datetime.strptime(released_str, "%d-%b-%Y")
-    else:
-        released_at = None
+        title = title_with_year.split("(")[0]
+        if released_str:
+            released_at = datetime.datetime.strptime(released_str, "%d-%b-%Y")
+        else:
+            released_at = None
 
         movie = Movie(movie_id=movie_id,
                     title=title,
@@ -73,20 +73,20 @@ def load_ratings():
     print "Ratings"
 
     # Delete all rows in table, so if we need to run this a second time,
-    # we won't be trying to add duplicate users
+    # we won't be trying to add duplicate ratings
     Rating.query.delete()
 
     # Read u.user file and insert data
     for row in open("seed_data/u.data"):
         row = row.rstrip()
-        words = row.split(" ")
-        rating_id, movie_id, user_id, score = words[0:4]
+        words = row.split("\t") #/t means tab - the data was seperated by a tab
+        user_id, movie_id, score, timestamp = words[0:4]
 
 
-        rating = Rating(rating_id=rating_id,
+        rating = Rating(user_id=user_id,
                     movie_id=movie_id,
-                    user_id=user_id,
-                    score=score)
+                    score=score,
+                    timestamp=timestamp)
 
         # We need to add to the session or it won't ever be stored
         db.session.add(rating)

@@ -6,18 +6,24 @@
 
 <body>
   Ratings
-  <hr> <!-- The <hr> tag is used to define a thematic change in the content. The tag incorporates a line across the page. It was in the example code in the exercise!-->
-  {% block content %} 
- 
-  <ul>
-    {% for mesage in get_flashed_messages() %}
-        <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
+
+{% if "user_id" in session %}
+  <a href="/logout">Logout</a>
+{% else %}
+  <a href="/login">Login</a>
+{% endif %}
+
+  
+<hr> 
+
+{% for flash in get_flashed_messages() %}
+    {{ flash }}
+{% endfor %}
 
 
+{% block content %} 
 
-  {% endblock %}
+{% endblock %}
 
 </body>
 </html>

@@ -42,12 +42,12 @@ def register_process():
     age = request.form.get("age")
     zipcode = request.form.get("zipcode")
 
-    new_user = [email, password, age, zipcode]
+    new_user = User(email=email, password=password, age=age, zipcode=zipcode)
 
     db.session.add(new_user)
     db.session.commit()
 
-    return render_template("/users/%s" % User.user_id)    
+    return render_template("/users/%s" % new_user.user_id)    
 
 
 @app.route('/login', methods=['GET'])
@@ -68,34 +68,37 @@ def login_process():
     if not user: 
         flash("You aren't currently a user. Please register.")
         return redirect("/register")
-    elif password != user.password: #Check to make sure this is a real thing
+    
+    if password != user.password: #Check to make sure this is a real thing
         flash("Incorrect password")
         return redirect("/login")
-    else:
-        session['user_id'] = user.user_id
-        flash("Logged in")
-        return redirect("/")
+        
+    flash("Logged in")
+    session['user_id'] = user.user_id
+    return redirect("/")
 
         # return redirect("/users/%s" % User.user_id)
 
+@app.route('/logout')
+def logout():
 
-# @app.route('/logout')
-# def logout():
+    del session['user_id']
 
-
-
-# @app.route("/users")
-# def user_list():
-#     """Show list of users."""
-
-#     users = User.query.all()
-#     return render_template("user_list.html", users=users) 
-
-#     return redirect("/")
+    flash("Logged out")
+    return redirect("/")
 
 
 # @app.route("/users/<int:user_id>")
 # def user_detail(user_id):
+
+
+@app.route("/users")
+def user_list():
+    """Show list of users."""
+
+    users = User.query.all()
+    return render_template("user_list.html", users=users) 
+
 
 
 if __name__ == "__main__":
@@ -106,6 +109,6 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
     app.run()

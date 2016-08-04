@@ -6,9 +6,18 @@
 
 <body>
   Ratings
-  <hr> <!-- What the hell is this? It was in the example in the exercise!-->
+  <hr> <!-- The <hr> tag is used to define a thematic change in the content. The tag incorporates a line across the page. It was in the example code in the exercise!-->
+  {% block content %} 
+ 
+  <ul>
+    {% for mesage in get_flashed_messages() %}
+        <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
 
-  {% block content %} put your content here {% endblock %}
+
+
+  {% endblock %}
 
 </body>
 </html>

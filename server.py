@@ -47,7 +47,7 @@ def register_process():
     db.session.add(new_user)
     db.session.commit()
 
-    return render_template("/users/%s" % new_user.user_id)    
+    return redirect("/users/%s" % new_user.user_id)    
 
 
 @app.route('/login', methods=['GET'])
@@ -75,9 +75,7 @@ def login_process():
         
     flash("Logged in")
     session['user_id'] = user.user_id
-    return redirect("/")
-
-        # return redirect("/users/%s" % User.user_id)
+    return redirect("/users/%s" % user.user_id)
 
 @app.route('/logout')
 def logout():
@@ -88,8 +86,11 @@ def logout():
     return redirect("/")
 
 
-# @app.route("/users/<int:user_id>")
-# def user_detail(user_id):
+@app.route("/users/<int:user_id>")
+def user_detail(user_id):
+
+    user = User.query.filter_by(user_id=user_id).first()
+    return render_template("users.html", user=user)
 
 
 @app.route("/users")
@@ -109,6 +110,6 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar
-    # DebugToolbarExtension(app)
+    DebugToolbarExtension(app)
 
     app.run()
